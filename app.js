@@ -8,8 +8,8 @@
  const AUTO="life-2026-autosave-v1",SLOT="life-2026-slot-",PREF="life-2026-voice-v1";
  const params=new URLSearchParams(location.search);
  function makeSeed(){
-  if(window.crypto&&crypto.getRandomValues){
-   const a=new Uint32Array(1);crypto.getRandomValues(a);return (a[0]%2147483646)+1;
+  if(window.crypto&&window.crypto.getRandomValues){
+   const a=new Uint32Array(1);window.crypto.getRandomValues(a);return (a[0]%2147483646)+1;
   }
   return 1+Math.floor(Math.random()*2147483646);
  }
@@ -80,7 +80,12 @@
   seed=newSeed;journal=J.newJournal(seed);life=J.replay(journal);book=[];roll=0;overrides={};
   started=!keepIntro;haltSpeech();
   history.replaceState(null,"","?seed="+seed);
-  if(!keepIntro)show("intro",false);else show("intro",true);
+  if(!keepIntro)show("intro",false);else {
+   const remembered=rememberBookmark();
+   $("resumeButton").classList.toggle("hidden",!remembered);
+   if(remembered)$("resumeButton").textContent="Resume age "+remembered.life.age+" · life #"+remembered.journal.seed;
+   show("intro",true);
+  }
   show("fork",false);show("ending",false);
   render(!keepIntro);
   if(!keepIntro)autoSave();
@@ -314,6 +319,25 @@
   const blob=new Blob([JSON.stringify(snapshot(),null,2)],{type:"application/json"});
   downloadBlob("life-"+seed+"-age-"+life.age+".json",blob);notify("Life file downloaded.");
  }
+ function exportCurrentImage(){
+  const w=1400,h=1020;
+  const imageCanvas=document.createElement("canvas");
+  imageCanvas.width=w;imageCanvas.height=h;
+  const gc=imageCanvas.getContext("2d");
+  const image=currentStory?artwork(currentStory.scene):null;
+  V.render(gc,w,h,life,currentStory||S.describe(life),roll,-1,{image});
+  const fade=gc.createLinearGradient(0,h*.64,0,h);
+  fade.addColorStop(0,"#09140e00");fade.addColorStop(1,"#08130dde");
+  gc.fillStyle=fade;gc.fillRect(0,h*.64,w,h*.36);
+  gc.textAlign="center";gc.fillStyle="#f1dfbb";gc.font="40px Georgia,serif";
+  gc.fillText("LIFE · "+life.age+" YEARS",w/2,h-90);
+  gc.font="19px monospace";gc.fillStyle="#bac6ae";
+  gc.fillText("SEED "+seed+" · "+(currentStory?.scene||"memory").toUpperCase(),w/2,h-55);
+  imageCanvas.toBlob(blob=>{
+   if(blob)downloadBlob("life-"+seed+"-age-"+life.age+"-scene.png",blob);
+   else notify("Could not export image.");
+  },"image/png");
+ }
  function exportPortrait(){
   drawPortrait();
   endCanvas.toBlob(blob=>{
@@ -455,6 +479,7 @@
    if(voicePrefs.auto)readAloud();
   };
   $("readButton").onclick=()=>readAloud();
+  $("saveSceneButton").onclick=exportCurrentImage;
   $("stopVoiceButton").onclick=haltSpeech;
   $("saveButton").onclick=()=>{renderSlots();show("saves",true);};
   $("closeSaves").onclick=()=>show("saves",false);
