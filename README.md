@@ -20,10 +20,11 @@ You begin at 18. Each year you allocate a limited number of drops of attention t
 - **Optional true local AI writing and paintings:** scripts in tools/ run your existing offline models and create narration packs or image files. Model weights aren't bundled, downloaded, or required.
 - **Offline speech:** only voices explicitly identified by the browser as local (SpeechSynthesisVoice.localService === true) can speak. Otherwise text narration continues.
 - **Auto-save and three local save slots:** browser localStorage, no accounts or database. Download a complete life archive (.json) to transfer or back it up.
+- **The Book of One Life:** browse and read every previous year and decision, including imported local-model narration. Export the full book as text and hear individual chapters spoken locally.
 - **Rewind / replay:** rewind the previous completed year and choose differently. Same-seed replay gives the same starting world; a new seed rerolls possible events and people.
 - **Two distinct rerolls:** Retell this moment changes narrative and ambience, NOT life outcomes. Reroll destiny starts a different seed.
-- **Final portrait and epitaph:** generated locally as a PNG image and shareable text.
-- **Small-screen UI**, no framework, no runtime imports and no hosted API requests.
+- **Generated images at any age:** save the current atmospheric vine illustration as a PNG, or export the full final portrait and epitaph at the end.
+- **Installable offline web app:** after the first hosted visit, a same-origin service worker caches the game shell for offline use. It also runs directly from local files. No framework, no runtime imports and no hosted API requests.
 
 ### Saving a life precisely
 
@@ -60,7 +61,7 @@ The game runs immediately using procedural stories and paintings. If you already
 py tools/offline_narrator.py --input "life-1234-age-45.json" --model "D:\models\your-instruct.Q4_K_M.gguf" --cli "C:\llama.cpp\llama-cli.exe" --limit 8
 ~~~
 
-4. The script writes life-local-narration.json. In LIFE choose **Saves → Import life file** and select it. The model-generated passages replace the text of those chapters only; game state and RNG remain untouched.
+4. The script writes life-local-narration.json. In LIFE choose **Saves → Import life file** and select it. The model-generated passages replace the text of those chapters only; game state and RNG remain untouched. Open **Story** to revisit every imported chapter.
 
 No HTTP server or paid service is required. The script will exit rather than downloading a model. **Local LLMs may invent details** despite the prompt; review narration before sharing. Each passage starts a fresh llama-cli process, so start with --limit 3 to save time.
 
@@ -86,6 +87,7 @@ Open Voice, select a voice explicitly marked local by your browser, then press R
 - scene.js — local procedural artwork and living vine rendering
 - app.js, index.html, style.css — game controls, mobile UI
 - art/manifest.js — optional generated art mapping, empty by default
+- sw.js, manifest.webmanifest, icon.svg — offline installation and local caching
 - tools/offline_narrator.py — optional true local GGUF narration
 - tools/offline_art.py — optional true local image generation
 - tests/ — headless life and UI tests
