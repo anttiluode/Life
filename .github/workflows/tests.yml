@@ -24,3 +24,5 @@ jobs:
         run: node tests/ui.test.cjs
       - name: Check offline generation scripts compile
         run: python -m py_compile tools/offline_art.py tools/offline_narrator.py
+      - name: Test offline narration pack without model downloads
+        run: python tools/offline_narrator.py --input tests/example_archive.json --dry-run --limit 2 --output /tmp/life-narration-test.json
