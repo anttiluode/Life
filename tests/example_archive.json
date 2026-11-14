@@ -1,0 +1,26 @@
+{
+  "format": "LIFE-ARCHIVE-1",
+  "journal": {
+    "version": 1,
+    "seed": 1105,
+    "commands": []
+  },
+  "book": [
+    {
+      "age": 18,
+      "at": "year:18",
+      "title": "The first rooms",
+      "body": "At eighteen, the future has not learned to look ordinary.",
+      "choice": ""
+    },
+    {
+      "age": 22,
+      "at": "event:22:child",
+      "title": "A child?",
+      "body": "A question arrives quietly at the kitchen table. Nothing has been decided.",
+      "choice": "Not yet — You said not yet."
+    }
+  ],
+  "roll": 0,
+  "overrides": {}
+}
