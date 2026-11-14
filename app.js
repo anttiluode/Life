@@ -18,6 +18,7 @@
  }
  let seed=urlSeed(),journal=J.newJournal(seed),life=J.replay(journal),book=[],roll=0,started=false;
  let overlays={},voicePrefs={auto:false,name:"",speed:.9};
+ let bookActiveIndex=-1;
  let overrides={},currentStory=null;
  let artCache={},artTag="",lastDraw=0,stageW=0,stageH=0,stageDPR=1;
  let toastTime=0,savedDraft=null;
@@ -63,7 +64,7 @@
   const a=validateArchive(data);
   journal=a.journal;life=a.life;book=a.book;roll=a.roll;overrides=a.overrides;
   seed=journal.seed;started=true;history.replaceState(null,"","?seed="+seed);
-  haltSpeech();show("intro",false);show("saves",false);show("voices",false);
+  haltSpeech();show("intro",false);show("saves",false);show("voices",false);show("bookModal",false);
   render(true);autoSave();
  }
  function autoSave(){
@@ -275,14 +276,48 @@
    J.append(journal,life,{op:"year"});count++;
    const page=S.yearStory(life,0);
    addBook(page,"year:"+life.age);
+   if(!life.alive)addBook(S.endStory(life,0),"end:"+life.age);
   }
   roll=0;render(true);autoSave();
   if(count>1)notify(count+" quiet years passed.");
   if(life.alive&&!life.pending.length&&voicePrefs.auto)readAloud();
  }
+ function chapter(e){
+  const edited=overrides[e.at];
+  return {title:edited&&edited.title?edited.title:e.title,
+   body:edited&&edited.body?edited.body:e.body,choice:e.choice||"",age:e.age,at:e.at};
+ }
  function shortBook(){
-  const entries=book.slice(-90).map(e=>"AGE "+e.age+" — "+e.title+"\n"+e.body+(e.choice?"\nChoice: "+e.choice:""));
-  return "LIFE #"+seed+" · "+life.age+" YEARS\n\n"+entries.join("\n\n")+"\n\nThe end of the book is still being written.";
+  const entries=book.map(original=>{
+   const e=chapter(original);
+   return "AGE "+e.age+" — "+e.title+"\n"+e.body+(e.choice?"\nChoice: "+e.choice:"");
+  });
+  return "LIFE #"+seed+" · "+life.age+" YEARS\n\n"+entries.join("\n\n")+
+   (life.alive?"\n\nThe end of the book is still being written.":"\n\nThe life has reached its end.");
+ }
+ function renderBook(index=book.length-1){
+  const host=$("bookChapters");host.replaceChildren();
+  if(!book.length){
+   $("bookPageAge").textContent="AGE —";
+   $("bookPageTitle").textContent="The pages are still blank.";
+   $("bookPageText").textContent="Make a choice. Then return here.";
+   $("bookPageChoice").textContent="";
+   return;
+  }
+  bookActiveIndex=Math.max(0,Math.min(book.length-1,index));
+  book.forEach((e,i)=>{
+   const ch=chapter(e),button=document.createElement("button");
+   if(i===bookActiveIndex)button.classList.add("active");
+   const date=document.createElement("span");date.textContent="AGE "+e.age;
+   button.append(date,document.createTextNode(ch.title.slice(0,44)));
+   button.onclick=()=>renderBook(i);
+   host.append(button);
+  });
+  const e=chapter(book[bookActiveIndex]);
+  $("bookPageAge").textContent="AGE "+e.age;
+  $("bookPageTitle").textContent=e.title;
+  $("bookPageText").textContent=e.body;
+  $("bookPageChoice").textContent=e.choice?"THE DECISION · "+e.choice:"";
  }
  function renderEnding(){
   const ep=L.epitaph(life),s=narrative();
@@ -425,16 +460,19 @@
   safeStorageSet(PREF,JSON.stringify(voicePrefs));
  }
  function haltSpeech(){if("speechSynthesis" in window)speechSynthesis.cancel();}
- function readAloud(sample=false){
+ function speakText(text){
   const voices=localVoices();
   if(!voices.length){notify("No verified local voice available. Narration remains text-only.");return;}
   const voice=voices.find(v=>v.name===voicePrefs.name)||voices[0];
   haltSpeech();
-  const u=new SpeechSynthesisUtterance(sample?
-   "A life is a living network. Some branches grow from choices. Others grow from time.":
-   currentStory?.speak||currentStory?.body||"");
+  const u=new SpeechSynthesisUtterance(String(text||"").slice(0,5000));
   u.voice=voice;u.lang=voice.lang;u.rate=voicePrefs.speed;u.pitch=.92;u.volume=.95;
   speechSynthesis.speak(u);
+ }
+ function readAloud(sample=false){
+  speakText(sample?
+   "A life is a living network. Some branches grow from choices. Others grow from time.":
+   currentStory?.speak||currentStory?.body||"");
  }
  function importData(file){
   if(!file)return;
@@ -483,6 +521,14 @@
   $("stopVoiceButton").onclick=haltSpeech;
   $("saveButton").onclick=()=>{renderSlots();show("saves",true);};
   $("closeSaves").onclick=()=>show("saves",false);
+  $("bookButton").onclick=()=>{renderBook();show("bookModal",true);};
+  $("closeBook").onclick=()=>show("bookModal",false);
+  $("speakChapter").onclick=()=>speakText($("bookPageText").textContent);
+  $("downloadBook").onclick=()=>{
+   downloadBlob("life-"+seed+"-story.txt",new Blob([shortBook()],{type:"text/plain;charset=utf-8"}));
+   notify("Story text downloaded.");
+  };
+  $("copyBook").onclick=()=>copy(shortBook());
   $("voiceButton").onclick=()=>{refreshVoices();show("voices",true);};
   $("closeVoices").onclick=()=>show("voices",false);
   $("voiceSelect").onchange=()=>{
@@ -517,10 +563,12 @@
    if(e.key==="Escape"){
     if(!$("saves").classList.contains("hidden"))show("saves",false);
     if(!$("voices").classList.contains("hidden"))show("voices",false);
+    if(!$("bookModal").classList.contains("hidden"))show("bookModal",false);
    }
    if(e.code==="Space"&&started&&!e.repeat&&!["INPUT","SELECT","BUTTON","TEXTAREA"].includes(document.activeElement?.tagName)&&
     $("fork").classList.contains("hidden")&&$("ending").classList.contains("hidden")&&
-    $("saves").classList.contains("hidden")&&$("voices").classList.contains("hidden")){
+    $("saves").classList.contains("hidden")&&$("voices").classList.contains("hidden")&&
+    $("bookModal").classList.contains("hidden")){
     e.preventDefault();year(1);
    }
   });
@@ -535,7 +583,7 @@
    $("resumeButton").classList.remove("hidden");
    $("resumeButton").textContent="Resume age "+r.life.age+" · life #"+r.journal.seed;
   }
-  show("intro",true);show("fork",false);show("ending",false);show("saves",false);show("voices",false);
+  show("intro",true);show("fork",false);show("ending",false);show("saves",false);show("voices",false);show("bookModal",false);
   render(false);requestAnimationFrame(animate);resize();
  }
  boot();
