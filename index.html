@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="theme-color" content="#0c1511">
+ <meta name="description" content="LIFE: a locally generated story about where your attention goes, who grows alongside you, and what remains. No API. No account.">
+ <meta property="og:title" content="LIFE — a story you spend">
+ <meta property="og:description" content="A life is a living network. Who will you become when everything costs attention?">
+ <title>LIFE — a story you spend</title>
+ <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+ <div class="app">
+  <header class="topbar">
+   <div class="brand"><span class="mark">L</span><div><b>LIFE</b><small>the story you spend</small></div></div>
+   <div class="topmeta"><span class="seed" id="seedTop">LIFE #—</span><span class="autosave" id="saveStatus">● Device-only saves</span></div>
+   <div class="topactions">
+    <button id="voiceButton" class="topbutton" title="Voice and narration" aria-label="Narration voice and settings">◖ Voice</button>
+    <button id="saveButton" class="topbutton" title="Save or restore this life">⊞ Saves</button>
+    <button id="newButton" class="topbutton" title="Start a different life">↻ New life</button>
+   </div>
+  </header>
+  <main class="main">
+   <section class="worldcol">
+    <div class="world">
+     <canvas id="worldCanvas" width="1000" height="920" aria-label="Your life drawn as an evolving vine in a generated illustrated scene"></canvas>
+     <div class="worldTop"><div class="chapterTag" id="chapterTag">CHAPTER I · AGE 18</div><div class="sceneTag" id="sceneTag">AN EVENING SOMEWHERE</div></div>
+     <div class="worldBottom">
+      <div class="narrationTop"><span id="narrationLabel">A LIFE IN PROGRESS</span><button id="rerollButton" class="linkbutton" title="Rewrite and redraw the same year without changing what happens">↝ Retell this moment</button></div>
+      <h1 id="storyTitle">An ordinary beginning.</h1>
+      <p id="storyText">There is time, for now.</p>
+      <div class="narrationActions"><button id="readButton" class="soft">▷ Read aloud</button><button id="stopVoiceButton" class="soft quiet">□ Stop</button><span>Generated here, from your life. No API.</span></div>
+     </div>
+    </div>
+    <div class="timeline">
+     <div class="timelineInfo"><span>YOUR YEARS</span><span id="timelineLabel">18 — now</span></div>
+     <div class="timelineTrack"><div id="timelineFill"></div></div>
+     <div class="milestones" id="milestones" aria-label="Recent moments"></div>
+    </div>
+   </section>
+
+   <aside class="sidebar">
+    <div class="ageRow"><div class="ageBlock"><span>YOU ARE</span><strong id="ageNumber">18</strong><span>YEARS OLD</span></div>
+     <div class="pulse"><div class="pulseWord">ONE LIFE</div><div class="pulseLine"></div><p>Whatever you choose to feed can grow. Whatever you leave alone may change without you.</p></div></div>
+    <section class="metrics">
+     <div class="metric"><div class="metricTitle"><span>HEALTH</span><b id="healthValue">80</b></div><div class="track"><i id="healthBar"></i></div></div>
+     <div class="metric"><div class="metricTitle"><span>WARMTH</span><b id="warmthValue">60</b></div><div class="track warmth"><i id="warmthBar"></i></div></div>
+     <div class="metric money"><div class="metricTitle"><span>MONEY</span><b id="moneyValue">€2k</b></div></div>
+    </section>
+    <section class="allocation">
+     <div class="sectionHead"><h2>Where will your attention go?</h2><span id="attentionCount">0 / 12</span></div>
+     <p class="hint">Each drop is a little time. You don't get it back.</p>
+     <div id="allocationRows" class="branches" aria-label="Allocate attention to people, work, dreams and yourself"></div>
+     <div class="yearActions"><button class="primary" id="yearButton">Live this year <span>→</span></button><button id="fiveButton" class="secondary" title="Advance up to five uneventful years; stops when a choice appears">Skip quiet years</button></div>
+     <p class="fineprint" id="turnInfo">Resolve any important choice before another year passes.</p>
+    </section>
+    <section class="chronicle">
+     <div class="sectionHead"><h2>What happened</h2><button class="linkbutton" id="copyChronicle">Copy story</button></div>
+     <div id="chronicleItems" class="chronicleItems" aria-live="polite"></div>
+    </section>
+   </aside>
+  </main>
+ </div>
+
+ <div class="veil" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <section class="modal intro">
+   <div class="modalkicker">AN OFFLINE GENERATIVE LIFE STORY</div>
+   <div class="ornament">✳</div>
+   <h1 id="introTitle">Life is what <em>grows</em><br>between decisions.</h1>
+   <p>Every year gives you a little attention. People, work, dreams, and your own body need some of it. Your choices become branches. Time decides what they can hold.</p>
+   <p>There isn't a winning life. There is only the one you live.</p>
+   <div class="introActions"><button class="primary" id="beginButton">Begin at eighteen <span>→</span></button><button id="resumeButton" class="secondary hidden">Resume your saved life</button></div>
+   <div class="introLower"><span id="introSeed">SEED —</span><button class="linkbutton" id="newSeedButton">↻ Reroll destiny</button></div>
+   <small>The story and images are generated in your browser. Optional voice uses only installed local voices. Nothing is sent to a server.</small>
+  </section>
+ </div>
+
+ <div class="veil hidden" id="fork" role="dialog" aria-modal="true" aria-labelledby="forkTitle">
+  <section class="modal forkModal">
+   <div class="modalkicker" id="forkAge">A FORK IN THE ROAD</div>
+   <div class="forkAccent" aria-hidden="true"></div>
+   <h2 id="forkTitle">A question.</h2><p id="forkText"></p>
+   <div id="forkChoices" class="forkChoices"></div>
+   <small id="forkFoot">The story continues in either direction.</small>
+  </section>
+ </div>
+
+ <div class="veil hidden" id="saves" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+  <section class="modal saveModal">
+   <div class="modalHeader"><div><div class="modalkicker">YOUR PRIVATE ARCHIVE</div><h2 id="saveTitle">Lives worth keeping.</h2></div><button class="close" id="closeSaves" aria-label="Close saves">×</button></div>
+   <p>Save three different timelines on this device. Download a life file if you want a copy that survives browser clearing. Everything stays in the browser unless you export it yourself.</p>
+   <div class="slots" id="saveSlots"></div>
+   <div class="saveActions"><button id="exportButton" class="secondary">↓ Download life file</button><button id="importButton" class="secondary">↑ Import life file</button><button id="undoButton" class="secondary">↶ Rewind one year</button></div>
+   <input type="file" id="importFile" accept=".json,application/json" hidden>
+   <div id="saveMessage" class="saveMessage" role="status"></div>
+  </section>
+ </div>
+
+ <div class="veil hidden" id="voices" role="dialog" aria-modal="true" aria-labelledby="voiceTitle">
+  <section class="modal settingsModal">
+   <div class="modalHeader"><div><div class="modalkicker">A VOICE IN THE ROOM</div><h2 id="voiceTitle">Let it speak.</h2></div><button class="close" id="closeVoices" aria-label="Close voice settings">×</button></div>
+   <p>The browser can read your current chapter aloud using a locally installed voice. The story is written on your device; no cloud narration service is used.</p>
+   <label class="selectLabel" for="voiceSelect">Offline voice</label><select id="voiceSelect"><option>Checking available voices…</option></select>
+   <label class="selectLabel" for="voiceSpeed">Speaking speed <span id="speedLabel">0.88×</span></label><input id="voiceSpeed" type="range" min=".65" max="1.2" step=".05" value=".9">
+   <label class="check"><input type="checkbox" id="autoVoice"> Narrate new chapters automatically</label>
+   <p class="voiceNote" id="voiceHelp">Only voices explicitly identified by your browser as local appear here. If none are installed, reading aloud remains disabled.</p>
+   <button id="testVoice" class="primary">Hear a sample</button>
+  </section>
+ </div>
+
+ <div class="veil hidden" id="ending" role="dialog" aria-modal="true" aria-labelledby="endingTitle">
+  <section class="modal endModal">
+   <div class="endArt"><canvas id="endCanvas" width="800" height="940" aria-label="Portrait of your completed life's vine"></canvas><div id="endSeal" class="endSeal">A LIFE LIVED</div></div>
+   <div class="endContent"><div class="modalkicker" id="endAge">THE FINAL CHAPTER</div><h2 id="endingTitle">The shape you leave.</h2><p id="endQuote" class="endQuote"></p><p id="endProse"></p>
+    <div class="endStats"><div><b id="endFuneral">—</b><span>CAME TO THE FUNERAL</span></div><div><b id="endMoney">—</b><span>LEFT BEHIND</span></div></div>
+    <div class="endList"><h3>Names that stayed</h3><p id="endWho"></p><h3>Branches that withered</h3><p id="endLost"></p></div>
+    <div class="endButtons"><button id="portraitButton" class="primary">↓ Save the portrait</button><button id="endExport" class="secondary">↓ Save this life</button><button id="endCopy" class="secondary">Copy epitaph</button><button id="endAgain" class="secondary">Another life</button><button id="endReplay" class="secondary">Same beginning</button></div>
+    <p class="fineprint">The final balance is not a verdict. Different lives grow differently.</p>
+   </div>
+  </section>
+ </div>
+ <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+ <script src="./life.js"></script>
+ <script src="./journal.js"></script>
+ <script src="./story.js"></script>
+ <script src="./scene.js"></script>
+ <script src="./art/manifest.js"></script>
+ <script src="./app.js"></script>
+</body></html>
