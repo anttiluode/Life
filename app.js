@@ -585,6 +585,10 @@
   }
   show("intro",true);show("fork",false);show("ending",false);show("saves",false);show("voices",false);show("bookModal",false);
   render(false);requestAnimationFrame(animate);resize();
+  // The browser caches only this same-origin static app for later offline play.
+  if("serviceWorker" in navigator && location.protocol!=="file:"){
+   navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  }
  }
  boot();
 })();
