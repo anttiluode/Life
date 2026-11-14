@@ -20,3 +20,7 @@ jobs:
           node-version: "22"
       - name: Determinism, saves, story and offline rendering
         run: node tests/life.test.cjs
+      - name: Browser controller smoke test (virtual DOM)
+        run: node tests/ui.test.cjs
+      - name: Check offline generation scripts compile
+        run: python -m py_compile tools/offline_art.py tools/offline_narrator.py
