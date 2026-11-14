@@ -16,9 +16,10 @@
    <div class="brand"><span class="mark">L</span><div><b>LIFE</b><small>the story you spend</small></div></div>
    <div class="topmeta"><span class="seed" id="seedTop">LIFE #—</span><span class="autosave" id="saveStatus">● Device-only saves</span></div>
    <div class="topactions">
-    <button id="voiceButton" class="topbutton" title="Voice and narration" aria-label="Narration voice and settings">◖ Voice</button>
-    <button id="saveButton" class="topbutton" title="Save or restore this life">⊞ Saves</button>
-    <button id="newButton" class="topbutton" title="Start a different life">↻ New life</button>
+    <button id="bookButton" class="topbutton" title="Read your life story" aria-label="Read your life story"><span class="topicon">✧</span><span class="toplabel"> Story</span></button>
+    <button id="voiceButton" class="topbutton" title="Voice and narration" aria-label="Narration voice and settings"><span class="topicon">◖</span><span class="toplabel"> Voice</span></button>
+    <button id="saveButton" class="topbutton" title="Save or restore this life"><span class="topicon">⊞</span><span class="toplabel"> Saves</span></button>
+    <button id="newButton" class="topbutton" title="Start a different life"><span class="topicon">↻</span><span class="toplabel"> New life</span></button>
    </div>
   </header>
   <main class="main">
@@ -94,6 +95,24 @@
    <div class="saveActions"><button id="exportButton" class="secondary">↓ Download life file</button><button id="importButton" class="secondary">↑ Import life file</button><button id="undoButton" class="secondary">↶ Rewind one year</button></div>
    <input type="file" id="importFile" accept=".json,application/json" hidden>
    <div id="saveMessage" class="saveMessage" role="status"></div>
+  </section>
+ </div>
+
+ <div class="veil hidden" id="bookModal" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+  <section class="modal bookModal">
+   <div class="modalHeader"><div><div class="modalkicker">A PRIVATE CHRONICLE</div><h2 id="bookTitle">The book of one life.</h2></div><button class="close" id="closeBook" aria-label="Close storybook">×</button></div>
+   <p class="bookIntro">These chapters follow the decisions you made. If you imported locally generated narration, its passages appear here alongside the original choices.</p>
+   <div class="bookLayout">
+    <nav id="bookChapters" class="bookChapters" aria-label="Your life's chapters"></nav>
+    <article class="bookPage">
+     <div class="modalkicker" id="bookPageAge">AGE —</div>
+     <h3 id="bookPageTitle">The pages are still blank.</h3>
+     <p id="bookPageText">Make a choice. Then return here.</p>
+     <p class="bookChoice" id="bookPageChoice"></p>
+    </article>
+   </div>
+   <div class="saveActions"><button class="secondary" id="speakChapter">▷ Speak this chapter</button><button class="secondary" id="downloadBook">↓ Download story text</button><button class="secondary" id="copyBook">Copy story</button></div>
+   <small>All passages are generated or loaded locally. The actual decisions cannot be changed by narration.</small>
   </section>
  </div>
 
