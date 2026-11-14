@@ -158,3 +158,39 @@ button.linkbutton:hover{color:#f8e0a3;background:transparent;text-decoration:und
  .endStats b{font-size:26px}
 }
 @media(prefers-reduced-motion:reduce){*{transition-duration:0s!important;animation-duration:0s!important}}
+
+
+/* The book preserves the original decisions and allows imported local-model
+   passages to be read in context rather than only at the current year. */
+.topicon{font-size:15px}
+.toplabel{font-size:12px}
+.bookModal{max-width:950px;width:min(950px,100%);padding:30px 32px}
+.bookIntro{font-size:13px!important;line-height:1.55!important;margin-bottom:19px!important}
+.bookLayout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:13px;min-height:320px;max-height:53vh;border:1px solid #425444;border-radius:9px;overflow:hidden;background:#0b1a13}
+.bookChapters{overflow:auto;background:#142219;border-right:1px solid #3d5742;padding:9px;display:flex;flex-direction:column;gap:5px}
+.bookChapters button{border:1px solid transparent;background:transparent;padding:9px;text-align:left;font-size:12px;line-height:1.3;color:#ccd6c5}
+.bookChapters button span{display:block;font:10px var(--mono);color:#c5b17e;margin-bottom:4px}
+.bookChapters button:hover{background:#253a2c;border-color:#4f6c54}
+.bookChapters button.active{background:#344332;border-color:#d3b98a;color:#fff0d2}
+.bookPage{padding:28px 28px 20px;overflow:auto}
+.bookPage h3{font:400 clamp(27px,3vw,40px)/1.12 var(--serif);letter-spacing:-.025em;color:#f0e6ce;margin:12px 0 16px}
+.bookPage p{font:19px/1.65 var(--serif);color:#d6dbc8;white-space:pre-wrap}
+.bookPage .bookChoice{font:12px/1.6 var(--mono);padding-top:13px;margin-top:22px;border-top:1px solid #53624c;color:#e8c794}
+@media(max-width:800px){
+ .bookModal{padding:23px 17px}
+ .bookLayout{grid-template-columns:170px minmax(0,1fr)}
+ .bookPage{padding:18px}
+ .bookPage p{font-size:16px}
+}
+@media(max-width:520px){
+ .toplabel{display:none}.topactions{gap:2px}.topactions .topbutton{padding:6px 7px}
+ .topicon{font-size:19px}
+ .brand{min-width:90px}
+ .topmeta{min-width:60px}
+ .topmeta .seed{font-size:9px}
+ .bookLayout{grid-template-columns:1fr;max-height:60vh}
+ .bookChapters{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;min-height:70px;max-height:80px;border-right:0;border-bottom:1px solid #3d5742}
+ .bookChapters button{min-width:112px;flex:0 0 auto;font-size:11px}
+ .bookPage{min-height:190px}
+ .bookPage h3{font-size:29px}
+}
